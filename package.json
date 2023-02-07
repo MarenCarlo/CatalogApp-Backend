@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node index",
     "babel-node": "babel-node --presets=@babel/preset-env",
-    "dev": "nodemon --exec npm run babel-node src/index"
+    "dev": "nodemon --exec npm run babel-node src/index",
+    "build": "babel index.js -d dist"
   },
   "keywords": [],
   "author": "",
