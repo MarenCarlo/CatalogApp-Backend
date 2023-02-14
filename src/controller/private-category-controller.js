@@ -30,7 +30,7 @@ const addCategory = async (req, res) => {
             } else {
                 res.status(400).json({
                     error: true,
-                    message: 'Esta Categoria ya existe...'
+                    message: 'Este Nombre de Categoria ya existe...'
                 });
             }
         }
@@ -52,6 +52,7 @@ const editCategory = async (req, res) => {
                 message: "Todos los campos deben ser llenados!"
             });
         } else {
+
             const connection = await getConnection();
             const verifyCategorySql = `SELECT * FROM category WHERE category_Name = ?;`
             let result = await connection.query(verifyCategorySql, category_Name)
@@ -70,7 +71,7 @@ const editCategory = async (req, res) => {
             } else {
                 res.status(400).json({
                     error: true,
-                    message: 'No se puede editar al mismo valor...'
+                    message: 'Este Nombre de Categoria ya existe...'
                 });
             }
         }
@@ -92,11 +93,27 @@ const deleteCategory = async (req, res) => {
             });
         } else {
             const connection = await getConnection();
-            await connection.query("DELETE FROM category WHERE id_Category = ?", id);
-            res.status(200).json({
-                error: false,
-                message: "Categoria Eliminada Exitosamente..."
-            });
+            const haveProductsSQL = `
+                SELECT
+                    COUNT(id_Product) AS products
+                FROM
+                    product
+                WHERE
+                    fk_Category = ${id};
+            `;
+            let result = await connection.query(haveProductsSQL);
+            if (result[0].products > 0) {
+                res.status(400).json({
+                    error: true,
+                    message: "No se pudo eliminar esta categoría ya que hay: " + result[0].products + " Productos asignados a ella"
+                });
+            } else {
+                await connection.query("DELETE FROM category WHERE id_Category = ?", id);
+                res.status(200).json({
+                    error: false,
+                    message: "Categoria Eliminada Exitosamente..."
+                });
+            }
         }
     } catch (error) {
         res.status(500).json(error.message);

@@ -22,7 +22,6 @@ const verificationPassword = async (req, res, next) => {
         } else {
             //validacion de Hash de Password
             const validPassword = await bcrypt.compare(passUser, result[0].passUser);
-            let paso = result[0].passUser
             if (!validPassword) {
                 res.status(401).json({ error: true, message: 'La contraseña es incorrecta...' });
             } else {

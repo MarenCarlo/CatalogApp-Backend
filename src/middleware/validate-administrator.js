@@ -24,7 +24,7 @@ const verifyAdmin = async (req, res, next) => {
         `
         const connection1 = await getConnection();
         let query_result = await connection1.query(sql_role, userId);
-        if (query_result[0].id_role == process.env.US_ADMIN_ROLE) {
+        if ((query_result[0].id_role == process.env.US_ADMIN_ROLE) || (query_result[0].id_role == process.env.US_DEVELOPER_ROLE)) {
             /**
              * La funcion Next() la utilizamos para indicar que si nuestro token es correcto
              * continue a mostrar el siguiente documento, o en este caso la ruta que se esta

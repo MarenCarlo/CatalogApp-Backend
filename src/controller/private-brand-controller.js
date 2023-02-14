@@ -30,7 +30,7 @@ const addBrand = async (req, res) => {
             } else {
                 res.status(400).json({
                     error: true,
-                    message: 'Esta Marca ya existe...'
+                    message: 'Este Nombre de Categoria ya existe...'
                 });
             }
         }
@@ -70,7 +70,7 @@ const editBrand = async (req, res) => {
             } else {
                 res.status(400).json({
                     error: true,
-                    message: 'No se puede editar al mismo valor...'
+                    message: 'Este Nombre de Marca ya existe...'
                 });
             }
         }
@@ -92,11 +92,27 @@ const deleteBrand = async (req, res) => {
             });
         } else {
             const connection = await getConnection();
-            await connection.query("DELETE FROM brand WHERE id_Brand = ?", id);
-            res.status(200).json({
-                error: false,
-                message: "Marca Eliminada Exitosamente..."
-            });
+            const haveProductsSQL = `
+            SELECT
+                COUNT(id_Product) AS products
+            FROM
+                product
+            WHERE
+                fk_Brand =  ${id};
+            `;
+            let result = await connection.query(haveProductsSQL);
+            if (result[0].products > 0) {
+                res.status(400).json({
+                    error: true,
+                    message: "No se pudo eliminar esta Marca ya que hay: " + result[0].products + " Productos asignados a ella"
+                });
+            } else {
+                await connection.query("DELETE FROM brand WHERE id_Brand = ?", id);
+                res.status(200).json({
+                    error: false,
+                    message: "Marca Eliminada Exitosamente..."
+                });
+            }
         }
     } catch (error) {
         res.status(500).json(error.message);
