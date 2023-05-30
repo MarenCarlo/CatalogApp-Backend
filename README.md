@@ -10,6 +10,7 @@ _SV_PORT is for the APP Port an SV_APP is for the API Name_
 _this is for the white list of domains allowed by the CORS library_
 - CR_DOMAIN_1=
 - CR_DOMAIN_2=
+- CR_DOMAIN_3=
 
 ## DATABASE VARIABLES ##
 _this is for the database connection information_
